@@ -2,49 +2,84 @@ package pl.com.bottega.ecommerce.sales.domain.offer;
 
 import java.util.ArrayList;
 import java.util.List;
+import pl.com.bottega.ecommerce.sales.domain.offer.OfferItem;
+import pl.com.bottega.ecommerce.sales.domain.offer.Product;
 
-public class Offer {
-private List<OfferItem> availabeItems = new ArrayList<OfferItem>();
+public class Offer 
+{
+	private List<OfferItem> availabeItems = new ArrayList<OfferItem>();
 	
 	private List<OfferItem> unavailableItems = new ArrayList<OfferItem>();
 	
 	
-	public Offer(List<OfferItem> availabeItems, List<OfferItem> unavailableItems) {
-		this.availabeItems = availabeItems;
-		this.unavailableItems = unavailableItems;
+	//public Offer(List<Product> availabeItems, List<Product> unavailableItems) 
+	//{
+		//this.availabeItems = availabeItems;
+		//this.unavailableItems = unavailableItems;
+	//}
+	
+	public Offer(OfferItem it)
+	{
+		if(it.getProduct().isAvailable())
+		{
+			this.availabeItems.add(it);
+		}
+		else
+		{
+			this.unavailableItems.add(it);
+		}
 	}
 
-	public List<OfferItem> getAvailabeItems() {
+	public List<OfferItem> getAvailabeItems() 
+	{
 		return availabeItems;
 	}
 	
-	public List<OfferItem> getUnavailableItems() {
+	public List<OfferItem> getUnavailableItems() 
+	{
 		return unavailableItems;
 	}
 
 	@Override
-	public int hashCode() {
+	public int hashCode() 
+	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((availabeItems == null) ? 0 : availabeItems.hashCode());
+		result = prime * result + ((availabeItems == null) ? 0 : availabeItems.hashCode());
+		
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj)
+	{
 		if (this == obj)
+		{
 			return true;
+		}
+			
 		if (obj == null)
+		{
 			return false;
+		}
+			
 		if (getClass() != obj.getClass())
+		{
 			return false;
+		}
+			
 		Offer other = (Offer) obj;
-		if (availabeItems == null) {
-			if (other.availabeItems != null)
+		
+		if (availabeItems == null && other.availabeItems != null) 
+		{
 				return false;
-		} else if (!availabeItems.equals(other.availabeItems))
+				
+		} 
+		else if (!availabeItems.equals(other.availabeItems))
+		{
 			return false;
+		}
+			
 		return true;
 	}
 
@@ -54,25 +89,34 @@ private List<OfferItem> availabeItems = new ArrayList<OfferItem>();
 	 * @param delta acceptable difference in percent
 	 * @return
 	 */
-	public boolean sameAs(Offer seenOffer, double delta) {
-		if (! (availabeItems.size() == seenOffer.availabeItems.size()))
+	public boolean sameAs(Offer seenOffer, double delta)
+	{
+		if (!(availabeItems.size() == seenOffer.availabeItems.size()))
+		{
 			return false;
+		}
+			
 		
-		for (OfferItem item : availabeItems) {
-			OfferItem sameItem = seenOffer.findItem(item.getProductId());
-			if (sameItem == null)
+		for (OfferItem item : availabeItems) 
+		{
+			OfferItem sameItem = seenOffer.findItem(item.getProduct().getProductId());
+			if (sameItem == null || !sameItem.sameAs(item, delta) )
+			{
 				return false;
-			if (!sameItem.sameAs(item, delta))
-				return false;
+			}
 		}
 		
 		return true;
 	}
 
-	private OfferItem findItem(String productId) {
-		for (OfferItem item : availabeItems){
-			if (item.getProductId().equals(productId))
+	private OfferItem findItem(String productId) 
+	{
+		for (OfferItem item : availabeItems)
+		{
+			if (item.getProduct().getProductId().equals(productId))
+			{
 				return item;
+			}	
 		}
 		return null;
 	}
